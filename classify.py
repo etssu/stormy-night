@@ -1,6 +1,7 @@
 import csv
 import json
-from collections import Counter
+import sys
+from collections import Counter, defaultdict
 
 
 def load_calls(path):
@@ -138,8 +139,12 @@ def classify_call(call):
         
     return "UNKNOWN"
 
-# Load full dataset
-calls = load_calls("data/transcripts.jsonl")
+
+# Load input dataset
+input_path = sys.argv[1] if len(sys.argv) > 1 else "data/transcripts.jsonl"
+output_path = sys.argv[2] if len(sys.argv) > 2 else "predictions_night1.csv"
+
+calls = load_calls(input_path)
 
 # Classify all calls
 predictions = [
@@ -148,7 +153,7 @@ predictions = [
 ]
 
 # Save predictions to CSV
-with open("predictions_night1.csv", "w", newline="", encoding="utf-8") as file:
+with open(output_path, "w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     writer.writerow(["call_id", "label"])
     writer.writerows(predictions)
@@ -161,5 +166,4 @@ print("Total predictions:", len(predictions))
 print("Unique call IDs:", len(set(call_ids)))
 print("Predicted labels:", labels)
 print("UNKNOWN:", labels.get("UNKNOWN", 0))
-print("CSV created: predictions_night1.csv")
-
+print(f"CSV created: {output_path}")
